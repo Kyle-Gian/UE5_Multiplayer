@@ -19,10 +19,7 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-	UPROPERTY(VisibleAnywhere, Category = Camera)
-	class USpringArmComponent* CameraBoom;
-	UPROPERTY(VisibleAnywhere, Category = Camera)
-	class UCameraComponent* FollowCamera;
+
 
 	void MoveForward(float value);
 	void MoveRight(float value);
@@ -30,7 +27,13 @@ protected:
 	void LookUp(float value);
 
 private:
+	UPROPERTY(VisibleAnywhere, Category = Camera)
+	class USpringArmComponent* CameraBoom;
+	UPROPERTY(VisibleAnywhere, Category = Camera)
+	class UCameraComponent* FollowCamera;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	class UWidgetComponent* OverHeadWidget;
 public:	
 
 };
