@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Components/WidgetComponent.h"
 #include "GameFramework/Actor.h"
 #include "Weapon.generated.h"
 
@@ -25,6 +26,8 @@ public:
 	AWeapon();
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	void ShowPickUpWidget(bool bShowWidget);
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -34,6 +37,13 @@ protected:
 		UPrimitiveComponent* _otherComp,
 		int32 _otherBodyIndex, bool _bFromSweep,
 		const FHitResult& _sweepResult);
+
+	UFUNCTION()
+	void OnSphereEndOverlap(UPrimitiveComponent* _overlappedComponent, AActor* _otherActor,
+		UPrimitiveComponent* _otherComp,
+		int32 _otherBodyIndex
+		);
+	
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
 	USkeletalMeshComponent* weaponMesh;
@@ -49,3 +59,4 @@ public:
 
 
 };
+

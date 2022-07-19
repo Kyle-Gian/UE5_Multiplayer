@@ -2,7 +2,6 @@
 
 
 #include "Weapon.h"
-
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
 #include "MultiplayerShooter/BlasterCharacter.h"
@@ -14,7 +13,6 @@ AWeapon::AWeapon()
 	PrimaryActorTick.bCanEverTick = false;
 	bReplicates = true;
 	weaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
-	weaponMesh->SetupAttachment(RootComponent);
 	SetRootComponent(weaponMesh);
 
 	weaponMesh->SetCollisionResponseToAllChannels(ECR_Block);
@@ -28,15 +26,6 @@ AWeapon::AWeapon()
 	
 	pickUpWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("PickupWidget"));
 	pickUpWidget->SetupAttachment(RootComponent);
-
-	if (HasAuthority())
-	{
-		GEngine->AddOnScreenDebugMessage(-1,45.0f, FColor::Red,"Has Auth");
-
-		areaSphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		areaSphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
-		areaSphere->OnComponentBeginOverlap.AddDynamic(this, &AWeapon::OnSphereOverlap);
-	}
 }
 
 
@@ -44,6 +33,15 @@ AWeapon::AWeapon()
 void AWeapon::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	if (HasAuthority())
+	{
+		areaSphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		areaSphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+		areaSphere->OnComponentBeginOverlap.AddDynamic(this, &AWeapon::OnSphereOverlap);
+		areaSphere->OnComponentEndOverlap.AddDynamic(this, &AWeapon::OnSphereEndOverlap);
+	}
+	
 	if (pickUpWidget)
 	{
 		pickUpWidget->SetVisibility(false);
@@ -55,12 +53,22 @@ void AWeapon::OnSphereOverlap(UPrimitiveComponent* _overlappedComponent, AActor*
 {
 	ABlasterCharacter* blasterCharacter = Cast<ABlasterCharacter>(_otherActor);
 	GEngine->AddOnScreenDebugMessage(-1,15.0f, FColor::Red,"Collision Detected");
-	if (blasterCharacter && pickUpWidget)
+	if (blasterCharacter)
 	{
+		blasterCharacter->SetOverLappingWeapon(this);
 		GEngine->AddOnScreenDebugMessage(-1,15.0f, FColor::Red,"DisplayText");
-		pickUpWidget->SetVisibility(true);
 	}
 	
+}
+
+void AWeapon::OnSphereEndOverlap(UPrimitiveComponent* _overlappedComponent, AActor* _otherActor,
+	UPrimitiveComponent* _otherComp, int32 _otherBodyIndex)
+{
+	ABlasterCharacter* blasterCharacter = Cast<ABlasterCharacter>(_otherActor);
+	if (blasterCharacter)
+	{
+		blasterCharacter->SetOverLappingWeapon(nullptr);
+	}
 }
 
 // Called every frame
@@ -70,3 +78,10 @@ void AWeapon::Tick(float DeltaTime)
 
 }
 
+void AWeapon::ShowPickUpWidget(bool bShowWidget)
+{
+	if (pickUpWidget)
+	{
+		pickUpWidget->SetVisibility(bShowWidget);
+	}
+}
