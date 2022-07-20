@@ -5,7 +5,8 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "CombatComponent.generated.h"
-
+class AWeapon;
+class ABlasterCharacter;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class MULTIPLAYERSHOOTER_API UCombatComponent : public UActorComponent
@@ -14,12 +15,20 @@ class MULTIPLAYERSHOOTER_API UCombatComponent : public UActorComponent
 
 public:	
 	UCombatComponent();
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	friend class ABlasterCharacter;
+
+	void EquipWeapon(AWeapon* WeaponToEquip);
+
+private:
+	 AWeapon* EquippedWeapon;
+	 ABlasterCharacter* Character;
+	
 protected:
 	virtual void BeginPlay() override;
 
 public:	
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-		
+	
 };
