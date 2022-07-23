@@ -3,6 +3,7 @@
 
 #include "CombatComponent.h"
 
+#include "Components/SphereComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "MultiplayerShooter/BlasterCharacter.h"
 #include "MultiplayerShooter/Weapons/Weapon.h"
@@ -42,7 +43,5 @@ void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
 	}
 
 	EquippedWeapon->SetOwner(Character);
-	EquippedWeapon->ShowPickUpWidget(false);
-	
 }
 

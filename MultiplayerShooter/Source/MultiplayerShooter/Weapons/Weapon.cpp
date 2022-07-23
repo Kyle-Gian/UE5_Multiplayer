@@ -5,6 +5,7 @@
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
 #include "MultiplayerShooter/BlasterCharacter.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values
 AWeapon::AWeapon()
@@ -71,11 +72,42 @@ void AWeapon::OnSphereEndOverlap(UPrimitiveComponent* _overlappedComponent, AAct
 	}
 }
 
+void AWeapon::OnRep_WeaponState()
+{
+	switch (weaponState)
+	{
+	case EWeaaponState::EWS_Equipped:
+		ShowPickUpWidget(false);
+		break;
+	}
+}
+
+void AWeapon::SetWeaponState(EWeaaponState State)
+{
+	weaponState = State;
+
+	switch (weaponState)
+	{
+	case EWeaaponState::EWS_Equipped:
+		ShowPickUpWidget(false);
+		areaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		break;
+	}
+	
+}
+
 // Called every frame
 void AWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void AWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AWeapon, weaponState);
+	
 }
 
 void AWeapon::ShowPickUpWidget(bool bShowWidget)
